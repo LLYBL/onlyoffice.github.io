@@ -27,6 +27,13 @@
             },
             "primary": true
         }],
-        "size": [1200, 800]
+        "size": [1200, 800],
+        "store": {
+            "icons": {
+                "light": "resources/img/main_small.png",
+                "dark": "resources/img/main_small.png"
+            },
+            "categories": ["specAbilities"]
+        }
     }]
 }
