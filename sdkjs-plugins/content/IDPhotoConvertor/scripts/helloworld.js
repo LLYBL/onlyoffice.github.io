@@ -1,6 +1,13 @@
 (
     function(window, undefined) {
         let tfliteModel;
+        // window.Asc.plugin.button = function(id) {
+        //     console.log(id)
+        //     this.executeCommand("close", '');
+        // };
+        window.Asc.plugin.button = function(id) {
+            this.executeCommand("close", "");
+        };
         window.Asc.plugin.init = function() {
 
             loadModelAndSetup();
@@ -13,19 +20,121 @@
             document.getElementById("uploadButton").addEventListener("click", function() {
                 upload();
             });
-            document.getElementById("imageInput").addEventListener("change", function(){
+            show1();
+
+            document.getElementById("imageInput").addEventListener("change", function() {
                 const fileNameSpan = document.getElementById('fileName');
                 const fileName = imageInput.files[0] ? imageInput.files[0].name : 'No file chosen';
                 fileNameSpan.textContent = fileName;
+
+                var canvas = document.getElementById("pic");
+                const file = imageInput.files[0];
+                const imageUrl = URL.createObjectURL(file);
+                // const tfimg = new Image();
+                // tfimg.src = imageUrl;
+
+                const img = new Image();
+                img.src = imageUrl;
+                img.onload = function() {
+
+                    var context = canvas.getContext("2d");
+                    const parentDiv = canvas.parentElement;
+
+                    const parentWidth = parentDiv.clientWidth;
+                    const targetWidth = parentWidth * 0.7;
+                    const scaleFactor = targetWidth / img.width;
+                    const targetHeight = img.height * scaleFactor;
+
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.drawImage(img, 0, 0, targetWidth, targetHeight);
+                    var pretext = document.getElementById("Previewtext");
+                    pretext.style = "display:none;";
+                    // context.drawImage(img, 0, 0); // 将图片绘制到Canvas的左上角坐标位置（0,0）
+
+                };
             });
-            document.getElementById("cancelButton").addEventListener("click", function() {
-                window.Asc.plugin.executeCommand("close", ""); // Close plugin
+
+            document.getElementById("usageGauide").addEventListener("click", function() {
+                show1();
             });
-            // let b = document.getElementById("mess");
-            // b.innerText = 'init finish'
-            console('init finish')
-            console(document.currentScript.src)
+            document.getElementById("phrequir").addEventListener("click", function() {
+                show2();
+            });
+            document.getElementById("privacysta").addEventListener("click", function() {
+                show3();
+            });
         };
+
+        function show1() {
+            const c1 = document.getElementById('help1')
+            const c2 = document.getElementById('help2')
+            const c3 = document.getElementById('help3')
+
+            c1.style.display = 'block';
+            c2.style.display = 'none';
+            c3.style.display = 'none';
+
+            const t1 = document.getElementById('usageGauide')
+            const t2 = document.getElementById('phrequir')
+            const t3 = document.getElementById('privacysta')
+
+            t1.style.backgroundColor = '#94b5ce'
+            t2.style.backgroundColor = '#e4e4e4'
+            t3.style.backgroundColor = '#e4e4e4'
+
+            t1.style.color = '#fff'
+            t2.style.color = '#000'
+            t3.style.color = '#000'
+
+        }
+
+        function show2() {
+            const c1 = document.getElementById('help1')
+            const c2 = document.getElementById('help2')
+            const c3 = document.getElementById('help3')
+
+            c1.style.display = 'none';
+            c2.style.display = 'block';
+            c3.style.display = 'none';
+
+            const t1 = document.getElementById('usageGauide')
+            const t2 = document.getElementById('phrequir')
+            const t3 = document.getElementById('privacysta')
+
+            t2.style.backgroundColor = '#94b5ce'
+            t1.style.backgroundColor = '#e4e4e4'
+            t3.style.backgroundColor = '#e4e4e4'
+
+            t1.style.color = '#000'
+            t2.style.color = '#fff'
+            t3.style.color = '#000'
+        }
+
+        function show3() {
+            const c1 = document.getElementById('help1')
+            const c2 = document.getElementById('help2')
+            const c3 = document.getElementById('help3')
+
+            c1.style.display = 'none';
+            c2.style.display = 'none';
+            c3.style.display = 'block';
+
+            const t1 = document.getElementById('usageGauide')
+            const t2 = document.getElementById('phrequir')
+            const t3 = document.getElementById('privacysta')
+
+            t3.style.backgroundColor = '#94b5ce'
+            t2.style.backgroundColor = '#e4e4e4'
+            t1.style.backgroundColor = '#e4e4e4'
+
+            t1.style.color = '#000'
+            t2.style.color = '#000'
+            t3.style.color = '#fff'
+        }
+
 
         function console(mes) {
             let messageBox = document.getElementById("mess");
@@ -35,56 +144,13 @@
         }
         async function loadModelAndSetup() {
             tfliteModel = await tflite.loadTFLiteModel('./slim_reshape v2.tflite');
-            console("Model loaded successfully");
+            // console("Model loaded successfully");
         }
 
         function ProcessImg() {
             let imageInput = document.getElementById("imageInput");
-
-            // if (imageInput.files && imageInput.files[0]) {
-            //     let file = imageInput.files[0];
-            //     let reader = new FileReader();
-            //     reader.onload = function(e) {
-            //         let imgData = e.target.result;
-            //         if (imgData) {
-            //             // 创建一个 Image 对象以获取实际尺寸
-            //             let img = new Image();
-            //             img.onload = function() {
-            //                 let actualWidth = img.width;
-            //                 let actualHeight = img.height;
-
-            //                 let _param = {
-            //                     "data": imgData,
-            //                     "imgSrc": imgData, // 图片的 data URL
-            //                     "guid": "asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}", // 确保 GUID 是唯一的
-            //                     "width": actualWidth / 10, // 将像素转换为磅（假设 96 DPI）
-            //                     "height": actualHeight / 10, // 将像素转换为磅（假设 96 DPI）
-            //                     "widthPix": actualWidth * 100, // 图片的宽度（像素）
-            //                     "heightPix": actualHeight * 100 // 图片的高度（像素）
-            //                 };
-
-            //                 // 插入 OLE 对象
-            //                 window.Asc.plugin.executeMethod("AddOleObject", [_param])
-            //                     .then(() => {
-            //                         window.Asc.plugin.executeCommand("close", ""); // Close plugin after image insertion
-            //                     })
-            //                     .catch((error) => {});
-            //             };
-            //             img.onerror = function(error) {};
-            //             img.src = imgData; // 触发 image.onload
-            //         } else {}
-            //     };
-
-            //     reader.onerror = function(error) {
-
-            //     };
-
-            //     reader.readAsDataURL(file);
-            // } else {
-
-            // }
             if (imageInput.files && imageInput.files[0]) {
-                console('进入upload函数')
+                // console('进入upload函数')
                 const file = imageInput.files[0];
                 const imageUrl = URL.createObjectURL(file);
                 // const tfimg = new Image();
@@ -93,7 +159,7 @@
                 const img = new Image();
                 img.src = imageUrl;
                 img.onload = async() => {
-                    console('onload')
+                    // console('onload')
 
                     // 获取用户输入
                     var selectValue = getSelectedSizeValue();
@@ -203,7 +269,7 @@
                     }
 
 
-                    console('成功读取用户输入')
+                    // console('成功读取用户输入')
 
 
 
@@ -251,74 +317,26 @@
                             [startY / newHeight, startX / newWidth, (startY + targetHeight) / newHeight, (startX + targetWidth) / newWidth]
                         ], [0], [targetHeight, targetWidth]
                     ));
-                    console('算法结束，裁切方式为中心裁切')
-                        // 在 Canvas 上显示结果
-                        // canvas.width = 512;
-
-                    // canvas.height = 1024;
                     const canvas = document.getElementById('pic');
                     await tf.browser.draw(tf.div(croppedImage, 255), canvas);
-                    console('在插件内绘图')
-                        // 释放资源
-                        // URL.revokeObjectURL(imageUrl);
-                        // img.dispose();
-                        // input.dispose();
-                        // outputTensor.dispose();
-                        // mask.dispose();
-                        // expandedMask.dispose();
-                        // cropFloat.dispose();
+                    // console('在插件内绘图')
+                    // 释放资源
+                    // URL.revokeObjectURL(imageUrl);
+                    // img.dispose();
+                    // input.dispose();
+                    // outputTensor.dispose();
+                    // mask.dispose();
+                    // expandedMask.dispose();
+                    // cropFloat.dispose();
                 };
 
-
-
-
-
-
-
-
-
-                // tfimg.onload = async() => {
-                //     const imgdata = tf.browser.fromPixels(tfimg);
-                //     const resizedImageData = tf.image.resizeBilinear(imgdata, [512, 512], alignCorners = true);
-                //     messageBox.innerText = '3'
-
-                //     const input = tf.expandDims(tf.div(resizedImageData, 255));
-                //     // console.log(input.shape)
-                //     // input.array().then(data => {
-                //     //     console.log(data);
-                //     // });
-                //     // Run inference and get output tensors
-                //     const outputTensor = tfliteModel.predict(input);
-                //     const output = outputTensor.arraySync()[0];
-                //     messageBox.innerText = '4'
-
-                //     const reshapedOutput = tf.reshape(output, [512, 512]);
-                //     const mask = tf.greater(reshapedOutput, 0.5);
-
-                //     const expandedMask = tf.stack([mask, mask, mask], -1);
-
-                //     // 应用掩码到图像
-                //     const cropFloat = tf.mul(resizedImageData, expandedMask);
-                //     const canvas = document.createElement('canvas');
-                //     canvas.width = 512;
-                //     canvas.height = 512;
-                //     // document.body.appendChild(canvas);
-                //     messageBox.innerText = '5'
-
-                //     await tf.browser.draw(tf.div(cropFloat, 255), canvas);
-                //     const imgData = canvas.toDataURL('image/png');
-
-                //     messageBox.innerText = '6'
-
-
-                // };
             }
         }
         // 获取单选框选中照片大小的值
         function getSelectedSizeValue() {
             // 获取 name 为 'size' 的所有 radio 按钮
             const radios = document.getElementsByName('size');
-            
+
             // 遍历每个 radio 按钮，找出被选中的那个
             for (let i = 0; i < radios.length; i++) {
                 if (radios[i].checked) {
@@ -331,7 +349,7 @@
         function getSelectedColorValue() {
             // 获取 name 为 'size' 的所有 radio 按钮
             const radios = document.getElementsByName('color');
-            
+
             // 遍历每个 radio 按钮，找出被选中的那个
             for (let i = 0; i < radios.length; i++) {
                 if (radios[i].checked) {
@@ -340,6 +358,7 @@
             }
             return null; // 如果没有选中任何 radio
         }
+
         function upload() {
             const canvas = document.getElementById('pic');
             const ouputimgData = canvas.toDataURL('image/png');
@@ -352,39 +371,44 @@
             window.Asc.plugin.executeMethod("PutImageDataToSelection", [oImageData]);
             window.Asc.plugin.executeCommand("close", "");
 
-
-
-
-            // let outputImg = new Image();
-            // outputImg.onload = function() {
-            //     let actualWidth = outputImg.width;
-            //     let actualHeight = outputImg.height;
-            //     console("actualWidth:" + actualWidth)
-            //     console("actualHeight:" + actualHeight)
-
-            //     let _param = {
-            //         // "data": ouputimgData,
-            //         "imgSrc": ouputimgData, // 图片的 data URL
-            //         "guid": "asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}", // 确保 GUID 是唯一的
-            //         "width": 25, // 将像素转换为磅
-            //         "height": 35, // 将像素转换为磅 一寸照片
-            //         "widthPix": actualWidth, // 图片的宽度（像素）
-            //         "heightPix": actualHeight // 图片的高度（像素）
-            //     };
-
-            //     // 插入 OLE 对象
-            //     window.Asc.plugin.executeMethod("AddOleObject", [_param])
-            //         .then(() => {
-            //             window.Asc.plugin.executeCommand("close", ""); // Close plugin after image insertion
-            //         })
-            //         .catch((error) => {});
-            // };
-            // outputImg.src = ouputimgData; // 触发 image.onload
         }
-        window.Asc.plugin.button = function(id) {
-            if (id == 0) {
-                this.executeCommand("close", "");
-            }
-        };
+
+        window.Asc.plugin.onTranslate = function() {
+            document.getElementById("Previewtext").innerHTML = window.Asc.plugin.tr("Select a photo for preview");
+            document.getElementById("usageGauide").innerHTML = window.Asc.plugin.tr("Usage Guide");
+            document.getElementById("phrequir").innerHTML = window.Asc.plugin.tr("Photo requirements");
+            document.getElementById("privacysta").innerHTML = window.Asc.plugin.tr("Privacy Statement");
+            document.getElementById("hint1").innerHTML = window.Asc.plugin.tr("Select an image to upload");
+            document.getElementById("bt1").innerHTML = window.Asc.plugin.tr("Upload Image");
+            document.getElementById("fileName").innerHTML = window.Asc.plugin.tr("No file chosen");
+            document.getElementById("rad1").innerHTML = window.Asc.plugin.tr("1 inch");
+            document.getElementById("rad2").innerHTML = window.Asc.plugin.tr("2 inches");
+            document.getElementById("rad3").innerHTML = window.Asc.plugin.tr("small 1 inch");
+            document.getElementById("rad4").innerHTML = window.Asc.plugin.tr("small 2 inches");
+            document.getElementById("rad5").innerHTML = window.Asc.plugin.tr("large 1 inch");
+            document.getElementById("rad6").innerHTML = window.Asc.plugin.tr("large 2 inches");
+            document.getElementById("rad7").innerHTML = window.Asc.plugin.tr("Chinese passport");
+            document.getElementById("rad8").innerHTML = window.Asc.plugin.tr("driving license");
+            document.getElementById("rad9").innerHTML = window.Asc.plugin.tr("electronic driving license");
+            document.getElementById("rad10").innerHTML = window.Asc.plugin.tr("marriage registration photo");
+            document.getElementById("rad11").innerHTML = window.Asc.plugin.tr("second-generation identity card");
+            document.getElementById("rad12").innerHTML = window.Asc.plugin.tr("image information collection for college students");
+            document.getElementById("rad13").innerHTML = window.Asc.plugin.tr("electronic social security card");
+            document.getElementById("hint2").innerHTML = window.Asc.plugin.tr("Select the background color");
+            document.getElementById("color1").innerHTML = window.Asc.plugin.tr("red");
+            document.getElementById("color2").innerHTML = window.Asc.plugin.tr("white");
+            document.getElementById("color3").innerHTML = window.Asc.plugin.tr("blue");
+            document.getElementById("processButton").innerHTML = window.Asc.plugin.tr("Process");
+            document.getElementById("uploadButton").innerHTML = window.Asc.plugin.tr("Export");
+
+            document.getElementById("help1").innerHTML = window.Asc.plugin.tr("Step 1: Select a suitable picture to upload.<br>Step 2: Select the required format and size.<br>Step 3: Click the Process button and preview the effect of the ID photo.<br>Step 4: Click Export and insert the picture into the document.");
+
+
+
+            document.getElementById("help2").innerHTML = window.Asc.plugin.tr("Not all photos are suitable for conversion into ID photos. The photo you use needs to be a frontal photo without a hat, dressed appropriately. Normally, the two ear contours of a person and the place corresponding to the Adam's apple of a man should be seen in the photo, and the bottom is higher than the chest position.");
+            document.getElementById("help3").innerHTML = window.Asc.plugin.tr("After installation, this plug-in runs offline and will not upload or store any processed pictures or other user data.");
+            document.getElementById("typeSelect").innerHTML = window.Asc.plugin.tr("Select the photo type:");
+
+        }
 
     })(window, undefined);
