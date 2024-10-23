@@ -554,7 +554,7 @@
             document.getElementById("rad12").innerHTML = window.Asc.plugin.tr("image information collection for college students");
             document.getElementById("rad13").innerHTML = window.Asc.plugin.tr("electronic social security card");
             document.getElementById("rad14").innerHTML = window.Asc.plugin.tr("3 inches");
-            document.getElementById("rad15").innerHTML = window.Asc.plugin.tr("4 inches");
+            // document.getElementById("rad15").innerHTML = window.Asc.plugin.tr("4 inches");
             document.getElementById("rad16").innerHTML = window.Asc.plugin.tr("custom size");
             document.getElementById("rad161").innerHTML = window.Asc.plugin.tr("Width(px):");
             document.getElementById("rad162").innerHTML = window.Asc.plugin.tr("Height(px):");
