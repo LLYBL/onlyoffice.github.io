@@ -11,7 +11,7 @@
             "zh": "本插件用于将拍摄的照片转为证件照的格式。"
         },
         "url": "index.html",
-        "icons": ["resources/img/main_width_small.png"],
+        "icons": ["resources/img/main.png", "resources/img/main_width_small.png"],
         "isViewer": false,
         "EditorsSupport": ["word", "cell", "slide", "pdf"],
         "isVisual": true,
