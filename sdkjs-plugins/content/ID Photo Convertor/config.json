@@ -14,8 +14,8 @@
         "icons": ["resources/img/main.png"],
         "store": {
             "icons": {
-                "light": "resources/img/main_width_small.png",
-                "dark": "resources/img/main_width_small.png"
+                "light": "resources/img",
+                "dark": "resources/img"
             }
         },
         "isViewer": false,
