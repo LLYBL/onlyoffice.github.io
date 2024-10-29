@@ -10,6 +10,8 @@
         let layer;
         let first = true;
         let tr;
+        let session;
+        let threshold;
         window.Asc.plugin.button = function(id) {
             this.executeCommand("close", "");
         };
@@ -18,6 +20,15 @@
 
 
             loadModelAndSetup();
+
+            const slider = document.getElementById('mySlider');
+            const sliderValueDisplay = document.getElementById('sliderValue');
+            threshold = 0.65
+            slider.addEventListener('input', function() {
+                const value = slider.value;
+                sliderValueDisplay.textContent = value;
+                threshold = value;
+            });
 
             document.getElementById("processButton").addEventListener("click", function() {
                 ProcessImg();
@@ -229,11 +240,16 @@
         //     messageBox.innerText = oritext + '\n' + mes
         //         // console.log(oritext + '\n' + mes)
         // }
-        async function loadModelAndSetup() {
-            tfliteModel = await tflite.loadTFLiteModel('./slim_reshape v2.tflite');
-            // console("Model loaded successfully");
-        }
+        // async function loadModelAndSetup() {
+        //     tfliteModel = await tflite.loadTFLiteModel('./slim_reshape v2.tflite');
+        //     // console("Model loaded successfully");
+        // }
 
+        async function loadModelAndSetup() {
+            session = await ort.InferenceSession.create('./model.onnx');
+            console.log("Model loaded successfully");
+            // return session;
+        }
 
         function ProcessImg() {
             let imageInput = document.getElementById("imageInput");
@@ -251,8 +267,7 @@
 
                     // 获取用户输入
                     var selectValue = getSelectedSizeValue();
-                    console.log(selectValue)
-                        // 获取输出像素 可以写个选择框给用户选
+                    // 获取输出像素 可以写个选择框给用户选
                     var targetWidth = 295;
                     var targetHeight = 413;
                     switch (selectValue) {
@@ -380,57 +395,169 @@
 
                     // 算法环节
 
-                    const imgdata = tf.browser.fromPixels(img);
-                    const resizedImageData = tf.image.resizeBilinear(imgdata, [512, 512], alignCorners = true);
+                    // tflite的版本
 
-                    const input = tf.expandDims(tf.div(resizedImageData, 255));
+                    // const imgdata = tf.browser.fromPixels(img);
+                    // const resizedImageData = tf.image.resizeBilinear(imgdata, [512, 512], alignCorners = true);
 
-                    const outputTensor = tfliteModel.predict(input);
-                    const output = outputTensor.arraySync()[0];
+                    // const input = tf.expandDims(tf.div(resizedImageData, 255));
 
-                    const reshapedOutput = tf.reshape(output, [512, 512]);
-                    const mask = tf.greater(reshapedOutput, 0.5);
+                    // const outputTensor = tfliteModel.predict(input);
+                    // const output = outputTensor.arraySync()[0];
 
-                    const expandedMask = tf.stack([mask, mask, mask], -1);
+                    // const reshapedOutput = tf.reshape(output, [512, 512]);
+                    // const mask = tf.greater(reshapedOutput, 0.5);
+
+                    // const expandedMask = tf.stack([mask, mask, mask], -1);
 
 
 
-                    const redBackground = tf.tile(tf.tensor(backgroundColor, [1, 1, 3]), [512, 512, 1]);
+                    // const redBackground = tf.tile(tf.tensor(backgroundColor, [1, 1, 3]), [512, 512, 1]);
 
-                    // 应用掩码到图像，背景变为红色
-                    const foreground = tf.mul(resizedImageData, expandedMask);
-                    const invertedMask = tf.logicalNot(expandedMask);
-                    const background = tf.mul(redBackground, invertedMask);
-                    const colorImage = tf.add(foreground, background);
-                    console.log("alo")
-                    console.log(targetHeight)
-                    console.log(targetWidth)
+                    // // 应用掩码到图像，背景变为红色
+                    // const foreground = tf.mul(resizedImageData, expandedMask);
+                    // const invertedMask = tf.logicalNot(expandedMask);
+                    // const background = tf.mul(redBackground, invertedMask);
+                    // const colorImage = tf.add(foreground, background);
+                    // console.log("alo")
+                    // console.log(targetHeight)
+                    // console.log(targetWidth)
 
-                    const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
-                    const newWidth = Math.round(img.width * scale);
-                    const newHeight = Math.round(img.height * scale);
+                    // const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
+                    // const newWidth = Math.round(img.width * scale);
+                    // const newHeight = Math.round(img.height * scale);
 
-                    // 缩放图像
-                    const scaleData = tf.image.resizeBilinear(colorImage, [newHeight, newWidth]);
+                    // // 缩放图像
+                    // const scaleData = tf.image.resizeBilinear(colorImage, [newHeight, newWidth]);
 
-                    // 计算裁剪起始位置
-                    const startX = Math.floor((newWidth - targetWidth) / 2);
-                    const startY = Math.floor((newHeight - targetHeight) / 2);
+                    // // 计算裁剪起始位置
+                    // const startX = Math.floor((newWidth - targetWidth) / 2);
+                    // const startY = Math.floor((newHeight - targetHeight) / 2);
 
-                    // 裁剪图像
-                    const croppedImage = tf.squeeze(tf.image.cropAndResize(
-                        tf.expandDims(scaleData, 0), [
-                            [startY / newHeight, startX / newWidth, (startY + targetHeight) / newHeight, (startX + targetWidth) / newWidth]
-                        ], [0], [targetHeight, targetWidth]
-                    ));
+                    // // 裁剪图像
+                    // const croppedImage = tf.squeeze(tf.image.cropAndResize(
+                    //     tf.expandDims(scaleData, 0), [
+                    //         [startY / newHeight, startX / newWidth, (startY + targetHeight) / newHeight, (startX + targetWidth) / newWidth]
+                    //     ], [0], [targetHeight, targetWidth]
+                    // ));
 
-                    const hidcanvas = document.createElement('canvas');
-                    hidcanvas.width = targetWidth
-                    hidcanvas.height = targetHeight
-                    await tf.browser.draw(tf.div(croppedImage, 255), hidcanvas);
-                    const resultData = hidcanvas.toDataURL('image/png');
+                    // const hidcanvas = document.createElement('canvas');
+                    // hidcanvas.width = targetWidth
+                    // hidcanvas.height = targetHeight
+                    // await tf.browser.draw(tf.div(croppedImage, 255), hidcanvas);
+                    // const resultData = hidcanvas.toDataURL('image/png');
+                    // var konvaimg = new Image();
+                    // konvaimg.src = resultData
+                    // konvaimg.onload = function() {
+                    //     stage.width(targetWidth)
+                    //     stage.height(targetHeight)
+                    //     layer.remove()
+                    //     layer = new Konva.Layer();
+                    //     // darth vader
+                    //     var showImg = new Konva.Image({
+                    //         image: konvaimg,
+                    //         x: 0,
+                    //         y: 0,
+                    //         width: targetWidth,
+                    //         height: targetHeight,
+                    //         draggable: true
+                    //     });
+
+                    //     // add cursor styling
+                    //     showImg.on('mouseover', function() {
+                    //         document.body.style.cursor = 'pointer';
+                    //     });
+                    //     showImg.on('mouseout', function() {
+                    //         document.body.style.cursor = 'default';
+                    //     });
+
+
+
+                    //     const backgroundRect = new Konva.Rect({
+                    //         x: 0, // 矩形的x坐标
+                    //         y: 0, // 矩形的y坐标
+                    //         width: targetWidth, // 矩形的宽度
+                    //         height: targetHeight, // 矩形的高度
+                    //         fill: `rgb(${backgroundColor.join(', ')})`, // 矩形的填充颜色
+                    //     });
+                    //     layer.add(backgroundRect);
+
+                    //     layer.add(showImg);
+                    //     tr = new Konva.Transformer({
+                    //         node: showImg,
+                    //         centeredScaling: true,
+                    //         anchorFill: '#0E83CD',
+                    //         rotateAnchorOffset: -35
+                    //     });
+                    //     layer.add(tr);
+                    //     stage.add(layer);
+                    // }
+
+
+
+                    console.log(session)
+                    const inputName = session.inputNames[0];
+                    const outputName = session.outputNames[0];
+                    // console.log('Input Name:', inputName);
+                    // console.log('Output Name:', outputName);
+
+                    const input_width = 512
+                    const input_height = 512
+
+
+
+                    const src = cv.imread(img);
+                    const dst = new cv.Mat();
+                    const newSize = new cv.Size(input_width, input_height); // 指定目标大小
+
+                    cv.resize(src, dst, newSize, 0, 0, cv.INTER_LINEAR);
+
+                    // 创建一个新的 Canvas 元素
+                    const canvas = document.createElement('canvas');
+                    cv.imshow(canvas, dst);
+
+                    // 导出为 Data URL
+                    const resizeURL = canvas.toDataURL('image/png');
+
+                    // const src = cv.imread(img);
+                    // var dst = new cv.Mat();
+                    // cv.resize(src, dst, new cv.Size(input_width, input_height)); // Assuming model input size is 256x256
+                    // cv.cvtColor(dst, dst, cv.COLOR_RGBA2RGB, 3);
+                    // int8精度有点问题
+                    // const input = new Float32Array(dst.data.length);
+                    // for (let i = 0; i < dst.data.length; i++) {
+                    //     input[i] = dst.data[i] / 255.0;
+                    // }
+                    const otenser = await ort.Tensor.fromImage(resizeURL, {
+                        dataType: 'float32'
+                    });
+                    const odata = otenser.data.slice(0, 3 * input_height * input_width)
+
+
+                    const testTensor = new ort.Tensor('float32', odata, [1, 3, input_height, input_width]);
+                    const data = testTensor.data
+                        // const resultURL = testTensor.toDataURL('image/png');
+                    const results = await session.run({ img: testTensor });
+                    const mask = results['sigmoid_5.tmp_0'];
+                    console.log(mask.data)
+
+                    for (var i = 0; i < input_height * input_width; i++) {
+                        if (mask.data[i] < threshold) {
+                            data[i] = backgroundColor[0]
+                            data[i + input_height * input_width] = backgroundColor[1]
+                            data[i + input_height * input_width * 2] = backgroundColor[2]
+                        }
+                    }
+                    const resulttensor = new ort.Tensor('float32', data, [1, 3, input_height, input_width]);
+                    const resultURL = resulttensor.toDataURL()
+                        // const hidcanvas = document.createElement('canvas');
+                        // hidcanvas.width = targetWidth
+                        // hidcanvas.height = targetHeight
+                        // await tf.browser.draw(tf.div(croppedImage, 255), hidcanvas);
+
+                    // const resultData = hidcanvas.toDataURL('image/png');
                     var konvaimg = new Image();
-                    konvaimg.src = resultData
+                    konvaimg.src = resultURL
                     konvaimg.onload = function() {
                         stage.width(targetWidth)
                         stage.height(targetHeight)
@@ -475,6 +602,8 @@
                         layer.add(tr);
                         stage.add(layer);
                     }
+
+
 
                     // console('在插件内绘图')
                     // 释放资源
