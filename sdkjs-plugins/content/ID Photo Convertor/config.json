@@ -47,15 +47,12 @@
             }
         }],
         "store": {
-            "screenshots": [
-                "resources/img/screenshot.png"
-            ],
+            "screenshots": ["resources/img/screenshot.png", "resources/img/screenshot2.png", "resources/img/screenshot3.png"],
             "icons": {
                 "light": "resources/img/light",
                 "dark": "resources/img/dark"
             }
         },
-        "screenshot": ["resources/img/screenshot.png", "resources/img/screenshot2.png", "resources/img/screenshot3.png"],
         "isViewer": false,
         "EditorsSupport": ["word", "cell", "slide", "pdf"],
         "isVisual": true,
