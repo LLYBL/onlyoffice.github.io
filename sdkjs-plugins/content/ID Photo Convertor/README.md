@@ -1,11 +1,13 @@
-## Overview
+## 项目介绍
 
-This simple plugin is designed to show the basic functionality of ONLYOFFICE Document Editor plugins. It inserts the 'Hello World!' phrase when you press the button.
+这个仓库的内容是一个ONLYOFFICE插件，也是OSPP-2024项目“编写插件，将证件照转换器与 ONLYOFFICE 进行集成”的项目成果。
 
-It is without interface plugin and isn't installed by default in cloud, [self-hosted](https://github.com/ONLYOFFICE/DocumentServer) and [desktop version](https://github.com/ONLYOFFICE/DesktopEditors) of ONLYOFFICE editors. 
+这个插件允许用户在ONLYOFFICE内将个人照片转换为证件照。
 
-## How to use
+## 参考资料
 
-1. Open the Plugins tab and press "hello world" .
-
-If you need more information about how to use or write your own plugin, please see this https://api.onlyoffice.com/plugin/basic
+* ONLYOFFICE插件配置：https://api.onlyoffice.com/plugin/config#descriptionLocale
+* opencv.js：https://docs.opencv.org/4.x/d5/d10/tutorial_js_root.html
+* konva.js：https://konvajs.org/
+* onnxruntime web：https://onnxruntime.ai/docs/api/js/index.html
+* PP-Matting：https://github.com/PaddlePaddle/PaddleSeg/blob/develop/Matting/README.md
