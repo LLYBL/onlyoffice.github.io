@@ -6,16 +6,53 @@
     "guid": "asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}",
     "baseUrl": "",
     "variations": [{
-        "description": "This plugin is used to convert captured photos into the format of ID photos.",
+        "description": "This plugin is used to convert captured photos into the format of ID photos. Since the plugin uses image algorithms and neural network models, you may need to wait a while to download the plugin and process images.",
         "descriptionLocale": {
-            "zh": "本插件用于将拍摄的照片转为证件照的格式。"
+            "zh": "本插件用于将拍摄的照片转为证件照的格式。于在插件中使用了图像算法和神经网络模型，你也许需要相对较长的时间等待下载插件以及处理图像。"
         },
         "url": "index.html",
-        "icons": ["resources/img/main.png"],
+        "icons": [{
+            "style": "light",
+            "100%": {
+                "normal": "resources/img/main.png"
+            },
+            "125%": {
+                "normal": "resources/img/main.png"
+            },
+            "150%": {
+                "normal": "resources/img/main.png"
+            },
+            "175%": {
+                "normal": "resources/img/main.png"
+            },
+            "200%": {
+                "normal": "resources/img/main.png"
+            }
+        }, {
+            "style": "dark",
+            "100%": {
+                "normal": "resources/img/main-dark.png"
+            },
+            "125%": {
+                "normal": "resources/img/main-dark.png"
+            },
+            "150%": {
+                "normal": "resources/img/main-dark.png"
+            },
+            "175%": {
+                "normal": "resources/img/main-dark.png"
+            },
+            "200%": {
+                "normal": "resources/img/main-dark.png"
+            }
+        }],
         "store": {
+            "screenshots": [
+                "resources/img/screenshot.png"
+            ],
             "icons": {
-                "light": "resources/img",
-                "dark": "resources/img"
+                "light": "resources/img/light",
+                "dark": "resources/img/dark"
             }
         },
         "isViewer": false,
@@ -34,5 +71,6 @@
             "primary": true
         }],
         "size": [1200, 800]
-    }]
+    }],
+    "offerd": "LLYBL"
 }

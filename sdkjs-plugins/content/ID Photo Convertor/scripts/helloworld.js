@@ -8,16 +8,25 @@
         // let canvas;
         let stage;
         let layer;
+        let group;
         let first = true;
         let tr;
         let session;
         let threshold;
+        // var that;
+        let pluginWidth;
+        let pluginHeight;
+        let backgroundRect;
         window.Asc.plugin.button = function(id) {
             this.executeCommand("close", "");
         };
         window.Asc.plugin.init = function() {
-            // canvas = document.getElementById("pic");
+            that = this
 
+            pluginWidth = window.innerWidth;
+            pluginHeight = window.innerHeight;
+
+            // canvas = document.getElementById("pic");
 
             loadModelAndSetup();
 
@@ -50,10 +59,6 @@
 
                 const file = imageInput.files[0];
                 const imageUrl = URL.createObjectURL(file);
-                // const tfimg = new Image();
-                // tfimg.src = imageUrl;
-
-                // context.drawImage(img, 0, 0); // 将图片绘制到Canvas的左上角坐标位置（0,0）
 
                 var img = new Image();
                 img.onload = function() {
@@ -87,14 +92,6 @@
                         height: targetHeight,
                         // draggable: true
                     });
-
-                    // add cursor styling
-                    // showImg.on('mouseover', function() {
-                    //     document.body.style.cursor = 'pointer';
-                    // });
-                    // showImg.on('mouseout', function() {
-                    //     document.body.style.cursor = 'default';
-                    // });
 
                     layer.add(showImg);
                     // layer.add(showImg);
@@ -221,7 +218,17 @@
 
         function savePhoto() {
             tr.hide()
-            const ouputimgData = stage.toDataURL(); // 获取 base64 编码的 PNG 图像
+                // 由于使用了group，要单独找到group的区域导出 
+            const oldScale = stage.scale();
+            const oldPosition = stage.position();
+            stage.scale({ x: 1, y: 1 });
+            stage.position({ x: 0, y: 0 });
+
+            todatadict = backgroundRect.getClientRect()
+            todatadict['pixelRatio'] = 1
+            const ouputimgData = group.toDataURL(todatadict); // 获取 base64 编码的 PNG 图像
+            stage.scale(oldScale);
+            stage.position(oldPosition);
             tr.show()
                 // 创建一个隐藏的下载链接
             const link = document.createElement('a');
@@ -233,17 +240,6 @@
             link.click();
             document.body.removeChild(link);
         }
-
-        // function console(mes) {
-        //     let messageBox = document.getElementById("mess");
-        //     var oritext = messageBox.innerText
-        //     messageBox.innerText = oritext + '\n' + mes
-        //         // console.log(oritext + '\n' + mes)
-        // }
-        // async function loadModelAndSetup() {
-        //     tfliteModel = await tflite.loadTFLiteModel('./slim_reshape v2.tflite');
-        //     // console("Model loaded successfully");
-        // }
 
         async function loadModelAndSetup() {
             session = await ort.InferenceSession.create('./model.onnx');
@@ -385,192 +381,86 @@
                         default:
                             backgroundColor = [255, 0, 0];
                     }
-
-
-                    // console('成功读取用户输入')
-
-
-
-
-
-                    // 算法环节
-
-                    // tflite的版本
-
-                    // const imgdata = tf.browser.fromPixels(img);
-                    // const resizedImageData = tf.image.resizeBilinear(imgdata, [512, 512], alignCorners = true);
-
-                    // const input = tf.expandDims(tf.div(resizedImageData, 255));
-
-                    // const outputTensor = tfliteModel.predict(input);
-                    // const output = outputTensor.arraySync()[0];
-
-                    // const reshapedOutput = tf.reshape(output, [512, 512]);
-                    // const mask = tf.greater(reshapedOutput, 0.5);
-
-                    // const expandedMask = tf.stack([mask, mask, mask], -1);
-
-
-
-                    // const redBackground = tf.tile(tf.tensor(backgroundColor, [1, 1, 3]), [512, 512, 1]);
-
-                    // // 应用掩码到图像，背景变为红色
-                    // const foreground = tf.mul(resizedImageData, expandedMask);
-                    // const invertedMask = tf.logicalNot(expandedMask);
-                    // const background = tf.mul(redBackground, invertedMask);
-                    // const colorImage = tf.add(foreground, background);
-                    // console.log("alo")
-                    // console.log(targetHeight)
-                    // console.log(targetWidth)
-
-                    // const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
-                    // const newWidth = Math.round(img.width * scale);
-                    // const newHeight = Math.round(img.height * scale);
-
-                    // // 缩放图像
-                    // const scaleData = tf.image.resizeBilinear(colorImage, [newHeight, newWidth]);
-
-                    // // 计算裁剪起始位置
-                    // const startX = Math.floor((newWidth - targetWidth) / 2);
-                    // const startY = Math.floor((newHeight - targetHeight) / 2);
-
-                    // // 裁剪图像
-                    // const croppedImage = tf.squeeze(tf.image.cropAndResize(
-                    //     tf.expandDims(scaleData, 0), [
-                    //         [startY / newHeight, startX / newWidth, (startY + targetHeight) / newHeight, (startX + targetWidth) / newWidth]
-                    //     ], [0], [targetHeight, targetWidth]
-                    // ));
-
-                    // const hidcanvas = document.createElement('canvas');
-                    // hidcanvas.width = targetWidth
-                    // hidcanvas.height = targetHeight
-                    // await tf.browser.draw(tf.div(croppedImage, 255), hidcanvas);
-                    // const resultData = hidcanvas.toDataURL('image/png');
-                    // var konvaimg = new Image();
-                    // konvaimg.src = resultData
-                    // konvaimg.onload = function() {
-                    //     stage.width(targetWidth)
-                    //     stage.height(targetHeight)
-                    //     layer.remove()
-                    //     layer = new Konva.Layer();
-                    //     // darth vader
-                    //     var showImg = new Konva.Image({
-                    //         image: konvaimg,
-                    //         x: 0,
-                    //         y: 0,
-                    //         width: targetWidth,
-                    //         height: targetHeight,
-                    //         draggable: true
-                    //     });
-
-                    //     // add cursor styling
-                    //     showImg.on('mouseover', function() {
-                    //         document.body.style.cursor = 'pointer';
-                    //     });
-                    //     showImg.on('mouseout', function() {
-                    //         document.body.style.cursor = 'default';
-                    //     });
-
-
-
-                    //     const backgroundRect = new Konva.Rect({
-                    //         x: 0, // 矩形的x坐标
-                    //         y: 0, // 矩形的y坐标
-                    //         width: targetWidth, // 矩形的宽度
-                    //         height: targetHeight, // 矩形的高度
-                    //         fill: `rgb(${backgroundColor.join(', ')})`, // 矩形的填充颜色
-                    //     });
-                    //     layer.add(backgroundRect);
-
-                    //     layer.add(showImg);
-                    //     tr = new Konva.Transformer({
-                    //         node: showImg,
-                    //         centeredScaling: true,
-                    //         anchorFill: '#0E83CD',
-                    //         rotateAnchorOffset: -35
-                    //     });
-                    //     layer.add(tr);
-                    //     stage.add(layer);
-                    // }
-
-
-
-                    console.log(session)
+                    console.log(backgroundColor)
+                        // 后面是算法部分 
+                        // 读取模型的输入输出key
                     const inputName = session.inputNames[0];
                     const outputName = session.outputNames[0];
-                    // console.log('Input Name:', inputName);
-                    // console.log('Output Name:', outputName);
 
+                    // 模型的输入size
                     const input_width = 512
                     const input_height = 512
 
-
-
+                    // 先将图片用cv转为指定size，onnx的转换size是直接裁切。通过生成一个canvas来得到dataurl
                     const src = cv.imread(img);
                     const dst = new cv.Mat();
                     const newSize = new cv.Size(input_width, input_height); // 指定目标大小
-
                     cv.resize(src, dst, newSize, 0, 0, cv.INTER_LINEAR);
-
-                    // 创建一个新的 Canvas 元素
                     const canvas = document.createElement('canvas');
                     cv.imshow(canvas, dst);
-
-                    // 导出为 Data URL
                     const resizeURL = canvas.toDataURL('image/png');
 
-                    // const src = cv.imread(img);
-                    // var dst = new cv.Mat();
-                    // cv.resize(src, dst, new cv.Size(input_width, input_height)); // Assuming model input size is 256x256
-                    // cv.cvtColor(dst, dst, cv.COLOR_RGBA2RGB, 3);
-                    // int8精度有点问题
-                    // const input = new Float32Array(dst.data.length);
-                    // for (let i = 0; i < dst.data.length; i++) {
-                    //     input[i] = dst.data[i] / 255.0;
-                    // }
-                    const otenser = await ort.Tensor.fromImage(resizeURL, {
+                    // 通过fromImage api读取resize好的图片，此时图片是rgba的格式
+                    const resizedTensor = await ort.Tensor.fromImage(resizeURL, {
                         dataType: 'float32'
                     });
-                    const odata = otenser.data.slice(0, 3 * input_height * input_width)
+                    // 由于onnx得到的tensor格式是nchw，所以可以通过对tensor.data进行slice来实现透明通道的去除
+                    const rgbData = resizedTensor.data.slice(0, 3 * input_height * input_width)
+                        // 随后再将data转为tensor
+                    const rgbTensor = new ort.Tensor('float32', rgbData, [1, 3, input_height, input_width]);
 
+                    // 由于onnx读取数据转为tensor时会自动缩放到[0,1]，所以可以直接放入模型处理
+                    inputdict = {}
+                    inputdict[inputName] = rgbTensor
+                    const results = await session.run(inputdict);
+                    const mask = results[outputName];
 
-                    const testTensor = new ort.Tensor('float32', odata, [1, 3, input_height, input_width]);
-                    const data = testTensor.data
-                        // const resultURL = testTensor.toDataURL('image/png');
-                    const results = await session.run({ img: testTensor });
-                    const mask = results['sigmoid_5.tmp_0'];
-                    console.log(mask.data)
-
+                    // 将扣出来的人像加上设定的背景，转为tensor再转为图像dataurl
                     for (var i = 0; i < input_height * input_width; i++) {
                         if (mask.data[i] < threshold) {
-                            data[i] = backgroundColor[0]
-                            data[i + input_height * input_width] = backgroundColor[1]
-                            data[i + input_height * input_width * 2] = backgroundColor[2]
+                            // 由于data是已经被放缩到了[0,1]，所以颜色也要放缩
+                            rgbData[i] = backgroundColor[0] / 255
+                            rgbData[i + input_height * input_width] = backgroundColor[1] / 255
+                            rgbData[i + input_height * input_width * 2] = backgroundColor[2] / 255
                         }
                     }
-                    const resulttensor = new ort.Tensor('float32', data, [1, 3, input_height, input_width]);
+                    const resulttensor = new ort.Tensor('float32', rgbData, [1, 3, input_height, input_width]);
                     const resultURL = resulttensor.toDataURL()
-                        // const hidcanvas = document.createElement('canvas');
-                        // hidcanvas.width = targetWidth
-                        // hidcanvas.height = targetHeight
-                        // await tf.browser.draw(tf.div(croppedImage, 255), hidcanvas);
+                        // 现在得到的尺寸是512*512的
 
-                    // const resultData = hidcanvas.toDataURL('image/png');
+
+
+                    // 通过konva绘制图像，并使得可以调整
+                    // 不要同时动两个变
                     var konvaimg = new Image();
                     konvaimg.src = resultURL
                     konvaimg.onload = function() {
-                        stage.width(targetWidth)
-                        stage.height(targetHeight)
+                        stage.width(pluginWidth / 2)
+                        stage.height(pluginHeight)
                         layer.remove()
                         layer = new Konva.Layer();
                         // darth vader
+
+                        // 计算图片的新宽度，使得图片可以上下顶格地放入画布中，避免下边缘和画布下边缘不齐。
+                        const newWidth = img.width / img.height * targetHeight // 等比例缩放
+                        const newx = (targetWidth - newWidth) / 2 // 通过调整x来保证人物在中间
                         var showImg = new Konva.Image({
                             image: konvaimg,
-                            x: 0,
-                            y: 0,
-                            width: targetWidth,
+                            x: newx + (pluginWidth / 2 - targetWidth) / 2,
+                            y: (pluginHeight - targetHeight) / 2,
+                            width: newWidth,
                             height: targetHeight,
                             draggable: true
+                        });
+
+                        // 现在设置一个满大的画布，随后通过Group来限制图片的纯色背景，这样可以实现让transformer到图外面去，但是Group和image都要因此加一个偏移
+                        group = new Konva.Group({
+                            clip: {
+                                x: (pluginWidth / 2 - targetWidth) / 2,
+                                y: (pluginHeight - targetHeight) / 2,
+                                width: targetWidth,
+                                height: targetHeight
+                            }
                         });
 
                         // add cursor styling
@@ -581,39 +471,59 @@
                             document.body.style.cursor = 'default';
                         });
 
-
-
-                        const backgroundRect = new Konva.Rect({
-                            x: 0, // 矩形的x坐标
-                            y: 0, // 矩形的y坐标
-                            width: targetWidth, // 矩形的宽度
-                            height: targetHeight, // 矩形的高度
+                        backgroundRect = new Konva.Rect({
+                            x: (pluginWidth / 2 - targetWidth) / 2,
+                            y: (pluginHeight - targetHeight) / 2,
+                            width: targetWidth,
+                            height: targetHeight,
                             fill: `rgb(${backgroundColor.join(', ')})`, // 矩形的填充颜色
                         });
-                        layer.add(backgroundRect);
-
-                        layer.add(showImg);
+                        group.add(backgroundRect);
+                        group.add(showImg)
+                        layer.add(group);
                         tr = new Konva.Transformer({
                             node: showImg,
                             centeredScaling: true,
                             anchorFill: '#0E83CD',
-                            rotateAnchorOffset: -35
+                            rotateAnchorOffset: -35,
                         });
                         layer.add(tr);
                         stage.add(layer);
                     }
 
+                    stage.on('wheel', (e) => {
+                        e.evt.preventDefault();
 
+                        // 获取当前缩放比例
+                        let scale = stage.scaleX();
+                        const scaleBy = 1.05; // 缩放因子
 
-                    // console('在插件内绘图')
-                    // 释放资源
-                    // URL.revokeObjectURL(imageUrl);
-                    // img.dispose();
-                    // input.dispose();
-                    // outputTensor.dispose();
-                    // mask.dispose();
-                    // expandedMask.dispose();
-                    // cropFloat.dispose();
+                        // 判断滚轮方向（向上放大，向下缩小）
+                        if (e.evt.deltaY < 0) {
+                            scale *= scaleBy; // 放大
+                        } else {
+                            scale /= scaleBy; // 缩小
+                        }
+
+                        // 获取画布中心位置
+                        const canvasCenter = {
+                            x: stage.width() / 2,
+                            y: stage.height() / 2,
+                        };
+
+                        // 计算新的位置，使缩放以画布中心为基准
+                        const newPos = {
+                            x: canvasCenter.x - (canvasCenter.x - stage.x()) * scale / stage.scaleX(),
+                            y: canvasCenter.y - (canvasCenter.y - stage.y()) * scale / stage.scaleY(),
+                        };
+
+                        // 设置缩放比例和位置
+                        stage.scale({ x: scale, y: scale });
+                        stage.position(newPos);
+
+                        stage.batchDraw(); // 重新绘制 Stage
+                    });
+
                 };
 
             }
@@ -647,7 +557,16 @@
 
         function upload() {
             tr.hide()
-            const ouputimgData = stage.toDataURL();
+            const oldScale = stage.scale();
+            const oldPosition = stage.position();
+            stage.scale({ x: 1, y: 1 });
+            stage.position({ x: 0, y: 0 });
+
+            todatadict = backgroundRect.getClientRect()
+            todatadict['pixelRatio'] = 1
+            const ouputimgData = group.toDataURL(todatadict); // 获取 base64 编码的 PNG 图像
+            stage.scale(oldScale);
+            stage.position(oldPosition);
             tr.show()
             let oImageData = {
                 "src": ouputimgData,
@@ -703,6 +622,7 @@
             document.getElementById("typeSelect").innerHTML = window.Asc.plugin.tr("Select the photo type:");
 
             document.getElementById("saveButton").innerHTML = window.Asc.plugin.tr("Download and Save");
+            document.getElementById("threshold").innerHTML = window.Asc.plugin.tr("Threshold");
 
         }
 
